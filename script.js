@@ -29,15 +29,26 @@ const gameBoard = (()=>{
 
 const gameFlow = (()=>{
 
-  //private
+  //TODO: IMPLEMENT GAME END CONDITIONS
 
+  //private
+  let _turnPlayerNum = 0;
+  //cyclic counter to keep track of who is up next
+  const _incrementTurnPlayerNum = () => {
+    const numPlayers =  Object.keys(players).length;
+    _turnPlayerNum = (_turnPlayerNum + 1) % numPlayers;
+  }
 
   //public
-
+  const changeTurnPlayer = () => {
+    //rotate through the players cyclically by editing their properties
+    players[`player${_turnPlayerNum}`].isTurnPlayer = false;
+    _incrementTurnPlayerNum();
+    players[`player${_turnPlayerNum}`].isTurnPlayer = true;
+  }
   
   return {
-    //publicMethods,
-    //publicObjects,
+    changeTurnPlayer,
   };
 })();
 
@@ -69,6 +80,7 @@ const displayController = (()=>{
     //mark the target cell with the turn players marker
     gameBoard.board[`cell_${_getIdNum(event.target)}`] = turnPlayerMarker;
     renderDisplay();
+    gameFlow.changeTurnPlayer();
   }
 
   const _addListeners = () => {
@@ -136,7 +148,8 @@ const PlayerFactory = () => {
   return {
     name: `Player${_getPlayerNum()}`,
     marker: _assignMarker(),
-    isTurnPlayer: false,
+    //start game with 0th player to move
+    isTurnPlayer: _getPlayerNum() == 0 ? true : false,
   };
 };
 
