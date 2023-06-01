@@ -39,6 +39,18 @@ const gameFlow = (()=>{
     _turnPlayerNum = (_turnPlayerNum + 1) % numPlayers;
   }
 
+  const _winLookup = {
+    //lookup table for the winning lines
+    0: [0,1,2],
+    1: [3,4,5],
+    2: [6,7,8],
+    3: [0,3,6],
+    4: [1,4,7],
+    5: [2,5,8],
+    6: [0,4,8],
+    7: [2,4,6],
+  };
+
   //public
   const changeTurnPlayer = () => {
     //rotate through the players cyclically by editing their properties
@@ -46,9 +58,41 @@ const gameFlow = (()=>{
     _incrementTurnPlayerNum();
     players[`player${_turnPlayerNum}`].isTurnPlayer = true;
   }
+
+
+  function checkEndCond() {
+    //first check for a win
+    let winner = "";
+    Object.values(_winLookup).forEach(value => {
+      const firstVal = gameBoard.board[`cell_${value[0]}`];
+      //match first element of any winning line to the others, and non-zero
+      if ( firstVal!== " " &&
+      firstVal == gameBoard.board[`cell_${value[1]}`] && 
+      firstVal == gameBoard.board[`cell_${value[2]}`]) {
+        winner = firstVal + " wins";
+      }
+    });
+    //next check for draw by reading board cells in turn
+    let isDraw = true;
+    Object.values(gameBoard.board).forEach(value => {
+      //if any one cell is still empty, it is not yet a draw 
+      if (value===" ") {
+        isDraw = false;
+      };
+    });
+    if (isDraw) {
+      console.log("Draw");
+      return true;
+    } else if (winner) {
+      return true;
+    } else {
+      return false;
+    };
+  }
   
   return {
     changeTurnPlayer,
+    checkEndCond,
   };
 })();
 
@@ -80,6 +124,10 @@ const displayController = (()=>{
     //mark the target cell with the turn players marker
     gameBoard.board[`cell_${_getIdNum(event.target)}`] = turnPlayerMarker;
     renderDisplay();
+    const end = gameFlow.checkEndCond();
+    if (end==true) {
+      _removeListeners();
+    };
     gameFlow.changeTurnPlayer();
   }
 
