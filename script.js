@@ -84,6 +84,7 @@ const gameFlow = (()=>{
       console.log("Draw");
       return true;
     } else if (winner) {
+      console.log(winner);
       return true;
     } else {
       return false;
