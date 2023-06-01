@@ -50,9 +50,24 @@ const displayController = (()=>{
   };
 
   function _markCell(event) {
-    //TODO
-    //access cell with gameBoard.board[`cell_${_getIdNum(event.target)}`]
-    //access turn player with looping over i to make array players[`player${i}`], get index of true
+
+    const turnPlayerMarker = (() => {
+      const temp = [];
+      //push true or false for isTurnPlayer for each player in our game
+      Object.keys(players).forEach(player => 
+        temp.push(players[player].isTurnPlayer));
+      //validating if the turn player is unique (first index was found, and equals last index)
+      const index = temp.indexOf(true);
+      if (index != -1 && index == temp.lastIndexOf(true)) {
+        return players[`player${index}`].marker;
+      } else {
+        throw "ERROR: Either none or multiple turn players found";
+      };
+    })();
+
+    //mark the target cell with the turn players marker
+    gameBoard.board[`cell_${_getIdNum(event.target)}`] = turnPlayerMarker;
+    renderDisplay();
   }
 
   const _addListeners = () => {
@@ -71,12 +86,12 @@ const displayController = (()=>{
   const renderDisplay = (clear=false) => {
     const cells = document.querySelectorAll(".cell");
     cells.forEach(node => {
-      //if passed clear, renders empty
-      if (clear=true) {
+      //if passed clear=true, renders cells empty
+      if (clear==true) {
         node.innerHTML = " ";
       } else {
       //else sets the displayed value of each cell to its stored value in the board object
-      node.innerHTML = gameBoard.board[`cell_${_getIdNum(node)}`];
+        node.innerHTML = gameBoard.board[`cell_${_getIdNum(node)}`];
       };
     })
   };
@@ -101,14 +116,14 @@ const PlayerFactory = () => {
   
   //private
   const _getPlayerNum = () => {
-    return Object.keys(players).length + 1;
+    return Object.keys(players).length;
   };
 
   const _assignMarker = () => {
     //lookup table to provide easy maintenance
     const markerLookup = {
-      1: "X",
-      2: "0",
+      0: "X",
+      1: "0",
     };
     return markerLookup[_getPlayerNum()];
   }
@@ -125,5 +140,5 @@ const PlayerFactory = () => {
 
 //call factory to save players in an object
 const players = {};
+players.player0 = PlayerFactory();
 players.player1 = PlayerFactory();
-players.player2 = PlayerFactory();
