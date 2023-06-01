@@ -50,13 +50,14 @@ const displayController = (()=>{
   };
 
   function _markCell(event) {
-
+    //finding the turn Player's marker design
     const turnPlayerMarker = (() => {
       const temp = [];
       //push true or false for isTurnPlayer for each player in our game
       Object.keys(players).forEach(player => 
         temp.push(players[player].isTurnPlayer));
-      //validating if the turn player is unique (first index was found, and equals last index)
+      //validating if the turn player is unique 
+      //(first index was found, and equals last index)
       const index = temp.indexOf(true);
       if (index != -1 && index == temp.lastIndexOf(true)) {
         return players[`player${index}`].marker;
@@ -90,7 +91,8 @@ const displayController = (()=>{
       if (clear==true) {
         node.innerHTML = " ";
       } else {
-      //else sets the displayed value of each cell to its stored value in the board object
+      //else sets the displayed value of each cell 
+      //to its stored value in the board object
         node.innerHTML = gameBoard.board[`cell_${_getIdNum(node)}`];
       };
     })
