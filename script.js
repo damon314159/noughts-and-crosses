@@ -80,13 +80,13 @@ const gameFlow = (()=>{
         isDraw = false;
       };
     });
-    if (isDraw) {
-      console.log("Draw");
-      return true;
-    } else if (winner) {
+    if (winner) {
       console.log(winner);
       return true;
-    } else {
+    } else if (isDraw) {
+      console.log("Draw");
+      return true;
+    }  else {
       return false;
     };
   }
