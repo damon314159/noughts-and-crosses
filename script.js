@@ -67,10 +67,33 @@ const displayController = (()=>{
 //factories
 //---------
 
-const Player = () => {
-  //const _privateMethod=()=>{}
-  //const publicMethod=()=>{}
+const PlayerFactory = () => {
+  
+  //private
+  const _getPlayerNum = () => {
+    return Object.keys(players).length + 1;
+  };
+
+  const _assignMarker = () => {
+    //lookup table to provide easy maintenance
+    const markerLookup = {
+      1: "X",
+      2: "0",
+    };
+    return markerLookup[_getPlayerNum()];
+  }
+
+  //public
+
+
   return {
-    //publicMethod,
+    name: `Player${_getPlayerNum()}`,
+    marker: _assignMarker(),
+    isTurnPlayer: false,
   };
 };
+
+//call factory to save players in an object
+const players = {};
+players.player1 = PlayerFactory();
+players.player2 = PlayerFactory();
