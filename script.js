@@ -11,15 +11,15 @@ const gameBoard = (()=>{
 
   //public
   const board = {
-    cell_0 : " ",
-    cell_1 : " ",
-    cell_2 : " ",
-    cell_3 : " ",
-    cell_4 : " ",
-    cell_5 : " ",
-    cell_6 : " ",
-    cell_7 : " ",
-    cell_8 : " ",
+    cell_0 : [" ", " "],
+    cell_1 : [" ", " "],
+    cell_2 : [" ", " "],
+    cell_3 : [" ", " "],
+    cell_4 : [" ", " "],
+    cell_5 : [" ", " "],
+    cell_6 : [" ", " "],
+    cell_7 : [" ", " "],
+    cell_8 : [" ", " "],
   };
   
   return {
@@ -72,19 +72,19 @@ const gameFlow = (()=>{
     //first check for a win
     let winner = "";
     Object.values(_winLookup).forEach(value => {
-      const firstVal = gameBoard.board[`cell_${value[0]}`];
+      const firstVal = gameBoard.board[`cell_${value[0]}`][0];
       //match first element of any winning line to the others, and non-zero
       if ( firstVal!== " " &&
-      firstVal == gameBoard.board[`cell_${value[1]}`] && 
-      firstVal == gameBoard.board[`cell_${value[2]}`]) {
+      firstVal == gameBoard.board[`cell_${value[1]}`][0] && 
+      firstVal == gameBoard.board[`cell_${value[2]}`][0]) {
         winner = players[`player${_turnPlayerNum}`].marker[0] + " wins the game!";
       }
     });
     //next check for draw by reading board cells in turn
     let isDraw = true;
-    Object.values(gameBoard.board).forEach(value => {
+    Object.keys(gameBoard.board).forEach(key => {
       //if any one cell is still empty, it is not yet a draw 
-      if (value===" ") {
+      if (gameBoard.board[key][0]===" ") {
         isDraw = false;
       };
     });
@@ -145,7 +145,7 @@ const displayController = (()=>{
     }
 
     //mark the target cell with the turn players marker
-    gameBoard.board[`cell_${targetNum}`] = turnPlayerMarker(1);
+    gameBoard.board[`cell_${targetNum}`] = [turnPlayerMarker(0), turnPlayerMarker(1)];
     _renderDisplay();
     const end = gameFlow.checkEndCond();
     if (end) {
@@ -201,11 +201,11 @@ const displayController = (()=>{
     cells.forEach(node => {
       //if passed clear=true, clears cell value
       if (clear==true) {
-        gameBoard.board[`cell_${_getIdNum(node)}`] = " ";
+        gameBoard.board[`cell_${_getIdNum(node)}`] = [" ", " "];
       };
       //then sets the displayed value of each cell 
       //to its stored value in the board object
-      node.innerHTML = gameBoard.board[`cell_${_getIdNum(node)}`];
+      node.innerHTML = gameBoard.board[`cell_${_getIdNum(node)}`][1];
     })
   };
 
