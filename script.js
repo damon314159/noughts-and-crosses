@@ -29,8 +29,6 @@ const gameBoard = (()=>{
 
 const gameFlow = (()=>{
 
-  //TODO: IMPLEMENT GAME END CONDITIONS
-
   //private
   let _turnPlayerNum = 0;
   //cyclic counter to keep track of who is up next
@@ -52,12 +50,20 @@ const gameFlow = (()=>{
   };
 
   //public
-  const changeTurnPlayer = () => {
-    //rotate through the players cyclically by editing their properties
-    players[`player${_turnPlayerNum}`].isTurnPlayer = false;
-    _incrementTurnPlayerNum();
-    players[`player${_turnPlayerNum}`].isTurnPlayer = true;
-  }
+  const changeTurnPlayer = (reset=false) => {
+    //if passed true, set turn player back to start
+    if (reset) {
+      players[`player${_turnPlayerNum}`].isTurnPlayer = false;
+      players.player0.isTurnPlayer = true
+      _turnPlayerNum = 0;
+    }
+    //else rotate through the players cyclically by editing their properties
+    else {
+      players[`player${_turnPlayerNum}`].isTurnPlayer = false;
+      _incrementTurnPlayerNum();
+      players[`player${_turnPlayerNum}`].isTurnPlayer = true;
+    };
+  };
 
 
   function checkEndCond() {
@@ -105,7 +111,7 @@ const displayController = (()=>{
     return node.id.slice(5);
   };
 
-  function _markCell(event) {
+  function _markCell(targetNum) {
     //finding the turn Player's marker design, arg 0 for text, 1 for image
     const turnPlayerMarker = (isImg) => {
       const temp = [];
@@ -123,8 +129,8 @@ const displayController = (()=>{
     }
 
     //mark the target cell with the turn players marker
-    gameBoard.board[`cell_${_getIdNum(event.target)}`] = turnPlayerMarker(1);
-    renderDisplay();
+    gameBoard.board[`cell_${targetNum}`] = turnPlayerMarker(1);
+    _renderDisplay();
     const end = gameFlow.checkEndCond();
     if (end) {
       _removeListeners();
@@ -134,38 +140,60 @@ const displayController = (()=>{
     }
   }
 
+  //sets up and removes the game cells click listeners
+  const _convertMarkerEvent = (event) => {_markCell(_getIdNum(event.target))};
   const _addListeners = () => {
     const cells = document.querySelectorAll(".cell");
-    cells.forEach(node => node.addEventListener("click", _markCell, {once : true}))
+    cells.forEach(node => 
+      node.addEventListener("click", _convertMarkerEvent, {once : true}));
   };
   //run once to initialize
   _addListeners();
 
   const _removeListeners = () => {
     const cells = document.querySelectorAll(".cell");
-    cells.forEach(node => node.removeEventListener("click", _markCell))
+    cells.forEach(node => 
+      node.removeEventListener("click", _convertMarkerEvent));
   };
 
-  //public
-  const renderDisplay = (clear=false) => {
+  const _resetGame = () => {
+    _removeListeners();
+    _addListeners();
+    _renderDisplay(true); //clears
+    gameFlow.changeTurnPlayer(true); //player 0 to start
+    log(players.player0.marker[0] + " to move next");
+  };
+
+  //Add Button Flow Controls
+  (() => {
+    const restartBtn = document.querySelector(".restart");
+    restartBtn.addEventListener("click", _resetGame);
+    const aiBtn = document.querySelector(".ai-button");
+    aiBtn.addEventListener("click", ()=>{
+      //toggle button color
+      if (aiBtn.style["background-color"] == "rgb(45, 153, 243)") {
+        aiBtn.style = "background-color:rgb(71, 179, 211);"
+      } else {
+        aiBtn.style = "background-color:rgb(45, 153, 243);"
+      };
+      _toggleAiMode();
+    });
+  })();
+
+  const _renderDisplay = (clear=false) => {
     const cells = document.querySelectorAll(".cell");
     cells.forEach(node => {
-      //if passed clear=true, renders cells empty
+      //if passed clear=true, clears cell value
       if (clear==true) {
-        node.innerHTML = " ";
-      } else {
-      //else sets the displayed value of each cell 
-      //to its stored value in the board object
-        node.innerHTML = gameBoard.board[`cell_${_getIdNum(node)}`];
+        gameBoard.board[`cell_${_getIdNum(node)}`] = " ";
       };
+      //then sets the displayed value of each cell 
+      //to its stored value in the board object
+      node.innerHTML = gameBoard.board[`cell_${_getIdNum(node)}`];
     })
   };
 
-  const resetGame = () => {
-    _removeListeners();
-    _addListeners();
-    renderDisplay(true); //clears
-  };
+  //public
 
   const log = (message) => {
     const span = document.querySelector(".message");
@@ -173,8 +201,6 @@ const displayController = (()=>{
   }
 
   return {
-    renderDisplay,
-    resetGame,
     log,
   };
 })();
