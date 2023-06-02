@@ -27,6 +27,8 @@ const gameBoard = (()=>{
   };
 })();
 
+
+
 const gameFlow = (()=>{
 
   //private
@@ -96,12 +98,26 @@ const gameFlow = (()=>{
       return false; //game continues
     };
   }
+
+  const toggleAiMode = (() => {
+    let isAiMode = false;
+    const aiMode = ()=>{
+      isAiMode = !isAiMode;
+      if (isAiMode) {
+        //write AI controller here
+      };
+    };
+    return aiMode; 
+  })()
   
   return {
     changeTurnPlayer,
     checkEndCond,
+    toggleAiMode,
   };
 })();
+
+
 
 const displayController = (()=>{
 
@@ -164,7 +180,7 @@ const displayController = (()=>{
     log(players.player0.marker[0] + " to move next");
   };
 
-  //Add Button Flow Controls
+  //Add Button Controls
   (() => {
     const restartBtn = document.querySelector(".restart");
     restartBtn.addEventListener("click", _resetGame);
@@ -176,7 +192,7 @@ const displayController = (()=>{
       } else {
         aiBtn.style = "background-color:rgb(45, 153, 243);"
       };
-      _toggleAiMode();
+      gameFlow.toggleAiMode();
     });
   })();
 
@@ -204,6 +220,7 @@ const displayController = (()=>{
     log,
   };
 })();
+
 
 
 //factories
