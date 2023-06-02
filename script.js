@@ -69,7 +69,7 @@ const gameFlow = (()=>{
       if ( firstVal!== " " &&
       firstVal == gameBoard.board[`cell_${value[1]}`] && 
       firstVal == gameBoard.board[`cell_${value[2]}`]) {
-        winner = firstVal + " wins";
+        winner = firstVal + " wins the game!";
       }
     });
     //next check for draw by reading board cells in turn
@@ -81,13 +81,13 @@ const gameFlow = (()=>{
       };
     });
     if (winner) {
-      console.log(winner);
-      return true;
+      displayController.log(winner);
+      return true; //game ends
     } else if (isDraw) {
-      console.log("Draw");
-      return true;
+      displayController.log("The game was a DRAW");
+      return true; //game ends
     }  else {
-      return false;
+      return false; //game continues
     };
   }
   
@@ -107,7 +107,7 @@ const displayController = (()=>{
 
   function _markCell(event) {
     //finding the turn Player's marker design
-    const turnPlayerMarker = (() => {
+    const turnPlayerMarker = () => {
       const temp = [];
       //push true or false for isTurnPlayer for each player in our game
       Object.keys(players).forEach(player => 
@@ -120,16 +120,18 @@ const displayController = (()=>{
       } else {
         throw "ERROR: Either none or multiple turn players found";
       };
-    })();
+    }
 
     //mark the target cell with the turn players marker
-    gameBoard.board[`cell_${_getIdNum(event.target)}`] = turnPlayerMarker;
+    gameBoard.board[`cell_${_getIdNum(event.target)}`] = turnPlayerMarker();
     renderDisplay();
     const end = gameFlow.checkEndCond();
-    if (end==true) {
+    if (end) {
       _removeListeners();
-    };
-    gameFlow.changeTurnPlayer();
+    } else {
+      gameFlow.changeTurnPlayer();
+      log(turnPlayerMarker() + " to move next");
+    }
   }
 
   const _addListeners = () => {
@@ -165,9 +167,15 @@ const displayController = (()=>{
     renderDisplay(true); //clears
   };
 
+  const log = (message) => {
+    const span = document.querySelector(".message");
+    span.innerHTML = message;
+  }
+
   return {
     renderDisplay,
     resetGame,
+    log,
   };
 })();
 
