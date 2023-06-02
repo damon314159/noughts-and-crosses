@@ -69,7 +69,7 @@ const gameFlow = (()=>{
       if ( firstVal!== " " &&
       firstVal == gameBoard.board[`cell_${value[1]}`] && 
       firstVal == gameBoard.board[`cell_${value[2]}`]) {
-        winner = firstVal + " wins the game!";
+        winner = players[`player${_turnPlayerNum}`].marker[0] + " wins the game!";
       }
     });
     //next check for draw by reading board cells in turn
@@ -106,8 +106,8 @@ const displayController = (()=>{
   };
 
   function _markCell(event) {
-    //finding the turn Player's marker design
-    const turnPlayerMarker = () => {
+    //finding the turn Player's marker design, arg 0 for text, 1 for image
+    const turnPlayerMarker = (isImg) => {
       const temp = [];
       //push true or false for isTurnPlayer for each player in our game
       Object.keys(players).forEach(player => 
@@ -116,21 +116,21 @@ const displayController = (()=>{
       //(first index was found, and equals last index)
       const index = temp.indexOf(true);
       if (index != -1 && index == temp.lastIndexOf(true)) {
-        return players[`player${index}`].marker;
+        return players[`player${index}`].marker[isImg];
       } else {
         throw "ERROR: Either none or multiple turn players found";
       };
     }
 
     //mark the target cell with the turn players marker
-    gameBoard.board[`cell_${_getIdNum(event.target)}`] = turnPlayerMarker();
+    gameBoard.board[`cell_${_getIdNum(event.target)}`] = turnPlayerMarker(1);
     renderDisplay();
     const end = gameFlow.checkEndCond();
     if (end) {
       _removeListeners();
     } else {
       gameFlow.changeTurnPlayer();
-      log(turnPlayerMarker() + " to move next");
+      log(turnPlayerMarker(0) + " to move next");
     }
   }
 
@@ -193,8 +193,8 @@ const PlayerFactory = () => {
   const _assignMarker = () => {
     //lookup table to provide easy maintenance
     const markerLookup = {
-      0: "X",
-      1: "0",
+      0: ["X", "<img class=\"cross\" src=\"./assets/cross.svg\" alt=\"X\"></img>"],
+      1: ["0", "<img class=\"nought\" src=\"./assets/nought.svg\" alt=\"0\"></img>"],
     };
     return markerLookup[_getPlayerNum()];
   }

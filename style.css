@@ -78,3 +78,15 @@ body {
   font-weight: 600;
   font-size: 1rem;
 }
+
+.cross {
+  height: 90%;
+  filter: invert(14%) sepia(90%) saturate(4501%) 
+    hue-rotate(291deg) brightness(74%) contrast(114%);
+}
+
+.nought{
+  height: 65%;
+  filter: invert(13%) sepia(84%) saturate(5238%)
+    hue-rotate(260deg) brightness(59%) contrast(123%);
+}
